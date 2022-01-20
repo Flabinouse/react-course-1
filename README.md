@@ -1,4 +1,4 @@
-# React course 1
+# React course 1 LAMBERT Flavien
 
 ## Getting started
 
