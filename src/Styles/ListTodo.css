@@ -1,0 +1,17 @@
+#topbar {
+    display: flex;
+    width: 100%;
+    height: 55px;
+    background-color: rgb(172, 200, 223);
+    padding-left: 10px;
+}
+
+#topbar h1 {
+    padding-right: 25px;
+    padding-left: 10px;
+    color: aliceblue;
+}
+
+#buttonbar {
+    margin: 8px;
+}
