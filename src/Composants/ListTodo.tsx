@@ -9,11 +9,13 @@ import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
 import MenuItem from "@mui/material/MenuItem";
 import InputLabel from "@mui/material/InputLabel";
+import FormControl from "@mui/material/FormControl";
 import { Select } from "@mui/material";
 
 import '../Styles/ListTodo.css';
 
 const card = {
+    key: 1,
     id: 1,
     title: "Card title",
     description: "Card description",
@@ -41,6 +43,7 @@ export default function ListTodo() {
     const [openModalModify, setOpenModalModify] = useState(false);
     const [tempCard, setTempCard] = useState(card);
     const [storeCard, setStoreCard] = useState(card);
+    const [assignmentFilter, setAssignmentFilter] = useState("all");
 
     const handleCloseModalList = () => {
         setOpenModalList(false);
@@ -64,20 +67,24 @@ export default function ListTodo() {
         setOpenModalCard(false);
     };
 
-    const handleClickModify = (idListModify: any, idModify: any) => {
+    const handleClickModify = (idListModify: string, idModify: number) => {
         const newTodo = [...listTodo];
-        const modifCard : any = newTodo[parseInt(idListModify) - 1].cards.find(card => card.id === idModify);
-        setStoreCard(modifCard);
-        setTempCard(modifCard);
-        setOpenModalModify(true);
+        const modifCard = newTodo[parseInt(idListModify) - 1].cards.find(card => card.id === idModify);
+        if(modifCard !== undefined){
+            setTempCard(modifCard);
+            setStoreCard(modifCard);
+            setOpenModalModify(true);
+        }
     };
 
-    const handleClickDelete = (idListModify: any, idModify: any) => {
+    const handleClickDelete = (idListModify: string, idModify: number) => {
         const newTodo = [...listTodo];
-        const deleteCard:any = newTodo[parseInt(idListModify) - 1].cards.find(card => card.id === idModify);
-        var index = newTodo[parseInt(idListModify) - 1].cards.indexOf(deleteCard);
-        newTodo[parseInt(idListModify) - 1].cards.splice(index, 1);
-        setListTodo(newTodo); 
+        const deleteCard = newTodo[parseInt(idListModify) - 1].cards.find(card => card.id === idModify);
+        if(deleteCard !== undefined){
+            var index = newTodo[parseInt(idListModify) - 1].cards.indexOf(deleteCard);
+            newTodo[parseInt(idListModify) - 1].cards.splice(index, 1);
+            setListTodo(newTodo); 
+        }
     };
 
     const handleCloseModalModify = () => {
@@ -93,7 +100,7 @@ export default function ListTodo() {
         setListTodo(newTodo);   
     };
 
-    const getNameList = (e: { target: { value: any; }; }) => {
+    const getNameList = (e: { target: { value: string; }; }) => {
         setNewListName(e.target.value);
     }
 
@@ -105,6 +112,16 @@ export default function ListTodo() {
     function AddTodoCard(e: { preventDefault: () => void; }) {
         e.preventDefault();
         setOpenModalCard(true);
+    }
+
+    function getAllAssignment(): string[] {
+        var allAssignment: string[] = [];
+        listTodo.map(list => list.cards.map(card => allAssignment.push(card.assignedTo)));
+        return Array.from(new Set(allAssignment));
+    }
+
+    const getAssignmentFilter = (e: { target: { value: string; }; }) => {
+        setAssignmentFilter(e.target.value);
     }
 
     var styleMainModal = {
@@ -130,6 +147,19 @@ export default function ListTodo() {
                 <button type="button" className="btn btn-dark" id="buttonbar" onClick={AddTodoCard}>
                     Add Card
                 </button>
+                <FormControl id="assignment" variant="standard" sx={{ m: 1, minWidth: 120 }}>
+                    <InputLabel id="select-filter-name">Assignment</InputLabel>
+                    <Select
+                        labelId="select-filter-name"
+                        id="filter-name"
+                        label="Assignment"
+                        value={assignmentFilter}
+                        onChange={getAssignmentFilter}
+                    >
+                        <MenuItem value="all">All</MenuItem>
+                        {getAllAssignment().map(assignment => <MenuItem value={assignment}>{assignment}</MenuItem>)}
+                    </Select>
+                </FormControl>
             </div>
             <div>
                 <Dialog open={openModalList} onClose={handleCloseModalList}>
@@ -269,7 +299,7 @@ export default function ListTodo() {
             <div className="List" id="listCard">
             
             {listTodo.map(list =>{   
-                return <List id={list.id} title={list.title} cards={list.cards} funcModif={handleClickModify} funcDelete={handleClickDelete}/>
+                return <List id={list.id} title={list.title} cards={list.cards} funcModif={handleClickModify} funcDelete={handleClickDelete} assignment={assignmentFilter}/>
                 })
             }
             </div>
